@@ -1,6 +1,3 @@
-import time
-from time import *
-
 class No:
     def __init__(self, estado, total_F, custo_G, heuristica_H, pai):
         self.estado = estado
@@ -43,7 +40,7 @@ def calcularCusto(estadoInicial, estadoAtual, listaFechada, listaAberta):
                         aux = False
         return G
 
-def getAdjacentes(estadoAtual, listaAberta, listaFechada, bloqueios):
+def getAdjacentes(estadoAtual, listaAberta, listaFechada, bloqueios, arvore):
     listaExpansao = []
     adjacents = todosAdjacentesValidos(estadoAtual, bloqueios)
     for adjacent in adjacents:
@@ -56,6 +53,7 @@ def getAdjacentes(estadoAtual, listaAberta, listaFechada, bloqueios):
                 valido = False
         if valido == True:
             listaExpansao.append(adjacent)
+            arvore.append(adjacent)
     return listaExpansao
 
 def todosAdjacentesValidos(estadoAtual, bloqueios):
@@ -70,16 +68,15 @@ def todosAdjacentesValidos(estadoAtual, bloqueios):
         return False
     return [candidato for candidato in candidatos if isValidState(candidato)]
 
-def abrirLista(listaExpansao, estadoInicial, estadoFinal, estadoAtual, listaAberta, listaFechada, funcaoHeuristica, funcaoHeuristica2, guardas):
+def abrirLista(listaExpansao, estadoInicial, estadoFinal, estadoAtual, listaAberta, listaFechada, funcaoHeuristica, funcaoHeuristica2, guardas, arvore):
     for estado in listaExpansao:
         custo_G = calcularCusto(estadoInicial, estadoAtual, listaFechada, listaAberta) + 1
         heuristica_H = funcaoHeuristica(estado, estadoFinal) + funcaoHeuristica2(estado, guardas)
         total_F = custo_G + heuristica_H
-        print("Estado:",estado, "F(n):", total_F)
         novo_no = No(estado, total_F, custo_G, heuristica_H, estadoAtual)
+        arvore.node(str(novo_no.estado).replace('(', '').replace(', ', '.').replace(')', ''), str(novo_no.estado))
+        arvore.edge(str(novo_no.pai).replace('(', '').replace(', ', '.').replace(')', ''), str(novo_no.estado).replace('(', '').replace(', ', '.').replace(')', ''))
         listaAberta.append(novo_no)
-
-
     return listaAberta
 
 def melhorCaminho(estadoAtual, estadoInicial, listaFechada):
